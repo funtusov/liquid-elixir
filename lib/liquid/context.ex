@@ -14,4 +14,12 @@ defmodule Liquid.Context do
   def registers(context, key) do
     context.registers |> Map.get(key)
   end
+
+  def locked_presets() do
+    ["theme_id", "store_id"]
+  end
+
+  def cleanup_presets(presets) do
+    Map.drop(presets, ["theme_id", "store_id"])
+  end
 end

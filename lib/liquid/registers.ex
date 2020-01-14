@@ -2,7 +2,6 @@ defmodule Liquid.Registers do
   @default_tags %{
     continue: {Liquid.Continue, Liquid.Tag},
     comment: {Liquid.Comment, Liquid.Block},
-    include: {Liquid.Include, Liquid.Tag},
     assign: {Liquid.Assign, Liquid.Tag},
     block: {Liquid.Inherit, Liquid.Block},
     break: {Liquid.Break, Liquid.Tag},

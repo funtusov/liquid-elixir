@@ -15,7 +15,7 @@ defmodule Liquid.Template do
 
   def render(%Template{} = t, %Context{} = c) do
     c = %{c | blocks: t.blocks}
-    c = %{c | presets: t.presets}
+    c = %{c | presets: t.presets |> Context.cleanup_presets()}
     c = %{c | template: t}
     Render.render(t, c)
   end
@@ -61,11 +61,11 @@ defmodule Liquid.Template do
   def parse(value, presets \\ %{})
 
   def parse(<<markup::binary>>, presets) do
-    Liquid.Parse.parse(markup, %Template{presets: presets})
+    Liquid.Parse.parse(markup, %Template{presets: presets |> Context.cleanup_presets()})
   end
 
   @spec parse(nil, map) :: Liquid.Template
   def parse(nil, presets) do
-    Liquid.Parse.parse("", %Template{presets: presets})
+    Liquid.Parse.parse("", %Template{presets: presets |> Context.cleanup_presets()})
   end
 end
