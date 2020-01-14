@@ -21,7 +21,7 @@ defmodule Liquid.FilterTest do
 
   test :filter_parsed do
     name = "'foofoo'"
-    filters = [[:replace, ["'foo'", "'bar'"]], :raw]
+    filters = [[:replace, ["'foo'", "'bar'"]], [:raw, []]]
     assert "'barbar'" == Filters.filter(filters, name)
   end
 

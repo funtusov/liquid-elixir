@@ -488,12 +488,14 @@ defmodule Liquid.Filters do
   """
   def filter([], value), do: Liquid.Filters.Functions.escape(value)
 
-  def filter([:raw], value), do: value
+  def filter([[:raw, []]], value), do: value
 
-  def filter([[:raw, []] | rest], value), do: filter(rest ++ [:raw], value)
+  def filter([[:raw, []] | rest], value), do: filter(append_raw(rest), value)
 
   def filter([filter | rest], value) do
     [name, args] = filter
+
+    rest = auto_filter(rest, name)
 
     args =
       for arg <- args do
@@ -522,6 +524,18 @@ defmodule Liquid.Filters do
       end
 
     filter(rest, ret)
+  end
+
+  defp append_raw(filters) do
+    (filters ++ [[:raw, []]]) |> Enum.uniq()
+  end
+
+  defp auto_filter(filters, :markdown) do
+    append_raw(filters)
+  end
+
+  defp auto_filter(filters, _) do
+    filters
   end
 
   @doc """
