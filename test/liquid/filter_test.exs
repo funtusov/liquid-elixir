@@ -21,7 +21,7 @@ defmodule Liquid.FilterTest do
 
   test :filter_parsed do
     name = "'foofoo'"
-    filters = [[:replace, ["'foo'", "'bar'"]]]
+    filters = [[:replace, ["'foo'", "'bar'"]], :raw]
     assert "'barbar'" == Filters.filter(filters, name)
   end
 
@@ -309,7 +309,7 @@ defmodule Liquid.FilterTest do
   end
 
   test :newlines_to_br do
-    assert_template_result("a<br />\nb<br />\nc", "{{ source | newline_to_br }}", %{
+    assert_template_result("a<br />\nb<br />\nc", "{{ source | newline_to_br | raw }}", %{
       "source" => "a\nb\nc"
     })
   end

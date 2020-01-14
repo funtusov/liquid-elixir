@@ -12,7 +12,7 @@
             </div>
 
             <div>
-              {{ article.content | strip_html | truncate: 250 }}
+              {{ article.content | strip_html | truncate: 250 | raw }}
             </div>
 
             {% if blog.comments_enabled %}

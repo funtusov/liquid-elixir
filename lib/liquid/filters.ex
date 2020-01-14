@@ -396,6 +396,8 @@ defmodule Liquid.Filters do
       input |> HTML.html_escape()
     end
 
+    def escape(v), do: v
+
     defdelegate h(input), to: __MODULE__, as: :escape
 
     def escape_once(input) when is_binary(input) do
@@ -484,7 +486,11 @@ defmodule Liquid.Filters do
   @doc """
   Recursively pass through all of the input filters applying them
   """
-  def filter([], value), do: value
+  def filter([], value), do: Liquid.Filters.Functions.escape(value)
+
+  def filter([:raw], value), do: value
+
+  def filter([[:raw, []] | rest], value), do: filter(rest ++ [:raw], value)
 
   def filter([filter | rest], value) do
     [name, args] = filter

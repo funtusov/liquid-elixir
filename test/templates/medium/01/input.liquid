@@ -7,7 +7,7 @@
         </div>
         <div>
           <h3><a href="{{product.url}}">{{product.title}}</a></h3>
-          <p>{{ product.description | strip_html | truncatewords: 35 }}</p>
+          <p>{{ product.description | strip_html | truncatewords: 35 | raw }}</p>
         <p>{% if product.price_varies %} - <p>Varies the price<\p>{% endif %}</p>
       </div>
       </li>
