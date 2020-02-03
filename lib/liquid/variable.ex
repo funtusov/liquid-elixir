@@ -29,9 +29,13 @@ defmodule Liquid.Variable do
   def lookup(%Variable{} = v, %Context{} = context) do
     {ret, filters} = Appointer.assign(v, context)
 
+    filter_context = %{
+      theme_id: context.assigns |> Map.get("theme_id")
+    }
+
     result =
       try do
-        {:ok, filters |> Filters.filter(ret) |> apply_global_filter(context)}
+        {:ok, filters |> Filters.filter(ret, filter_context) |> apply_global_filter(context)}
       rescue
         e in UndefinedFunctionError -> {e, e.reason}
         e in ArgumentError -> {e, e.message}

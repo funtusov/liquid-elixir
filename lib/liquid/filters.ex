@@ -486,13 +486,13 @@ defmodule Liquid.Filters do
   @doc """
   Recursively pass through all of the input filters applying them
   """
-  def filter([], value), do: Liquid.Filters.Functions.escape(value)
+  def filter([], value, _), do: Liquid.Filters.Functions.escape(value)
 
-  def filter([[:raw, []]], value), do: value
+  def filter([[:raw, []]], value, _), do: value
 
-  def filter([[:raw, []] | rest], value), do: filter(append_raw(rest), value)
+  def filter([[:raw, []] | rest], value, context), do: filter(append_raw(rest), value, context)
 
-  def filter([filter | rest], value) do
+  def filter([filter | rest], value, context) do
     [name, args] = filter
 
     rest = auto_filter(rest, name)
@@ -500,6 +500,12 @@ defmodule Liquid.Filters do
     args =
       for arg <- args do
         Liquid.quote_matcher() |> Regex.replace(arg, "")
+      end
+
+    args =
+      case name do
+        :asset_url -> [context]
+        _ -> args
       end
 
     functions = Functions.__info__(:functions)
@@ -523,7 +529,7 @@ defmodule Liquid.Filters do
           apply_function(Functions, name, [value | args])
       end
 
-    filter(rest, ret)
+    filter(rest, ret, context)
   end
 
   defp append_raw(filters) do
