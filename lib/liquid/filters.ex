@@ -492,6 +492,23 @@ defmodule Liquid.Filters do
 
   def filter([[:raw, []] | rest], value, context), do: filter(append_raw(rest), value, context)
 
+  def filter([[:t = name, args] | rest], value, context) do
+    rest =
+      if String.ends_with?(value, "_html") do
+        rest ++ [[:raw, []]]
+      else
+        rest
+      end
+
+    args = Enum.reduce(args, %{}, fn map, args -> Map.merge(map, args) end)
+
+    custom_filters = Application.get_env(:liquid, :custom_filters)
+
+    value = apply_function(custom_filters[:t], name, [value, context, args])
+
+    filter(rest, value, context)
+  end
+
   def filter([filter | rest], value, context) do
     [name, args] = filter
 

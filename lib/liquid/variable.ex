@@ -30,7 +30,9 @@ defmodule Liquid.Variable do
     {ret, filters} = Appointer.assign(v, context)
 
     filter_context = %{
-      theme_id: context.assigns |> Map.get("theme_id")
+      theme_id: context.assigns |> Map.get("theme_id"),
+      localization_json: context.assigns |> Map.get("localization_json"),
+      locale: context.assigns |> Map.get("locale")
     }
 
     result =
@@ -87,20 +89,35 @@ defmodule Liquid.Variable do
     [name | filters] = Enum.filter(parsed_variable, &(&1 != "|"))
 
     filters = parse_filters(filters)
+
     [name | filters]
   end
 
   defp parse_filters(filters) do
     for markup <- filters do
-      [_, filter] = ~r/\s*(\w+)/ |> Regex.scan(markup) |> hd()
+      if String.starts_with?(markup, "t:") do
+        args =
+          Regex.scan(
+            ~r/([ ]*[a-z0-9_]+:[ ]*(?:"[^"]+"|'[^']+'|[a-z_\d\.]+)[,]*)/,
+            String.trim(String.slice(markup, 2, 1000))
+          )
+          |> List.flatten()
+          |> Liquid.List.even_elements()
+          |> Enum.map(&String.trim(&1, ","))
+          |> Enum.map(&String.trim(&1, " "))
 
-      args =
-        Liquid.filter_arguments()
-        |> Regex.scan(markup)
-        |> List.flatten()
-        |> Liquid.List.even_elements()
+        [:t, args]
+      else
+        [_, filter] = ~r/\s*(\w+)/ |> Regex.scan(markup) |> hd()
 
-      [String.to_atom(filter), args]
+        args =
+          Liquid.filter_arguments()
+          |> Regex.scan(markup)
+          |> List.flatten()
+          |> Liquid.List.even_elements()
+
+        [String.to_atom(filter), args]
+      end
     end
   end
 end

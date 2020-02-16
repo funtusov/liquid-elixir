@@ -48,9 +48,25 @@ defmodule Liquid.Appointer do
   Makes `Variable.parts` or literals from the given markup
   """
   @spec parse_name(String.t()) :: map()
-  def parse_name(name) do
+  def parse_name(name, opts \\ []) do
+    re1 = ~r/([a-z][a-z_\d]*):\s*\'([^\']*)\'/
+    re2 = ~r/([a-z][a-z_\d]*):\s*\"([^\"]*)\"/
+    re3 = ~r/([a-z][a-z_\d]*):\s*(.*)/
+
     value =
       cond do
+        Keyword.get(opts, :translation) && Regex.match?(re1, name) ->
+          [[_, var, value]] = Regex.scan(re1, name)
+          %{"t_value" => {"#{var}", value}}
+
+        Keyword.get(opts, :translation) && Regex.match?(re2, name) ->
+          [[_, var, value]] = Regex.scan(re2, name)
+          %{"t_value" => {"#{var}", value}}
+
+        Keyword.get(opts, :translation) && Regex.match?(re3, name) ->
+          [[_, var, value]] = Regex.scan(re3, name)
+          %{"t_assign" => {"#{var}", value}}
+
         Map.has_key?(@literals, name) ->
           Map.get(@literals, name)
 
@@ -75,10 +91,11 @@ defmodule Liquid.Appointer do
 
   defp assign_context([head | tail], assigns) do
     [name, args] = head
+    parse_opts = [translation: name == :t]
 
     args =
       for arg <- args do
-        parsed = parse_name(arg)
+        parsed = parse_name(arg, translation: parse_opts)
 
         cond do
           Map.has_key?(parsed, :parts) ->
@@ -87,6 +104,22 @@ defmodule Liquid.Appointer do
           Map.has_key?(assigns, :__struct__) ->
             key = String.to_atom(arg)
             if Map.has_key?(assigns, key), do: to_string(assigns[key]), else: arg
+
+          is_map(parsed[:literal]) && not is_nil(parsed[:literal]["t_value"]) ->
+            {key, value} = parsed[:literal]["t_value"]
+            %{"#{key}" => value}
+
+          is_map(parsed[:literal]) && not is_nil(parsed[:literal]["t_assign"]) ->
+            {key, value} = parsed[:literal]["t_assign"]
+
+            value =
+              cond do
+                is_integer(value) -> value
+                Regex.match?(~r/\d+/, value) -> value
+                true -> assigns |> Matcher.match(String.split(value, ".")) |> to_string()
+              end
+
+            %{"#{key}" => value}
 
           true ->
             if Map.has_key?(assigns, arg), do: to_string(assigns[arg]), else: arg
