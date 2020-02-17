@@ -7,15 +7,14 @@ defmodule Liquid.Supervisor do
   @doc """
   Starts the liquid supervisor
   """
-  def start_link do
-    Supervisor.start_link(__MODULE__, :ok)
+  def start_link(state \\ %{}) do
+    GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
 
   @doc """
   Actual supervisor init with no child processes to supervise yet
   """
-  def init(:ok) do
-    children = []
-    supervise(children, strategy: :one_for_one)
+  def init(stack) do
+    {:ok, stack}
   end
 end
