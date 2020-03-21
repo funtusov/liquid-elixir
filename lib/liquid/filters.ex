@@ -516,7 +516,7 @@ defmodule Liquid.Filters do
 
     args =
       for arg <- args do
-        Liquid.quote_matcher() |> Regex.replace(arg, "")
+        replace_quotes(arg)
       end
 
     args =
@@ -527,6 +527,15 @@ defmodule Liquid.Filters do
 
     functions = Functions.__info__(:functions)
     custom_filters = Application.get_env(:liquid, :custom_filters)
+
+    args =
+      cond do
+        name == :img_url ->
+          parse_pair_args(args)
+
+        true ->
+          args
+      end
 
     ret =
       case {name, functions[name], custom_filters[name]} do
@@ -548,6 +557,30 @@ defmodule Liquid.Filters do
 
     filter(rest, ret, context)
   end
+
+  defp parse_pair_args(args) do
+    [
+      Enum.reduce(args, %{}, &parse_pair_arg/2)
+    ]
+  end
+
+  defp parse_pair_arg(arg, result) when is_binary(arg) do
+    case Regex.scan(~r/^([a-z_]+):\s*(.*)$/, arg) do
+      [[_, name, value]] -> Map.put(result, name, value)
+      _ -> result
+    end
+  end
+
+  defp parse_pair_arg(arg, result) do
+    [[name], [value]] = [Map.keys(arg), Map.values(arg)]
+    Map.put(result, name, value)
+  end
+
+  defp replace_quotes(arg) when is_binary(arg) do
+    Liquid.quote_matcher() |> Regex.replace(arg, "")
+  end
+
+  defp replace_quotes(arg), do: arg
 
   defp append_raw(filters) do
     (filters ++ [[:raw, []]]) |> Enum.uniq()

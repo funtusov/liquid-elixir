@@ -49,8 +49,13 @@ defmodule Liquid.CustomFilters do
       |> String.replace("{{#{key}}}", value)
     end)
   end
+
+  def img_url("url", %{"gravity" => "bottom", "img_url" => "300x300"}) do
+    "url"
+  end
 end
 
 Application.put_env(:liquid, :custom_filters, %{
-  t: Liquid.CustomFilters
+  t: Liquid.CustomFilters,
+  img_url: Liquid.CustomFilters
 })

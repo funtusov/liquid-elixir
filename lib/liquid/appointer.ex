@@ -55,15 +55,15 @@ defmodule Liquid.Appointer do
 
     value =
       cond do
-        Keyword.get(opts, :translation) && Regex.match?(re1, name) ->
+        Keyword.get(opts, :parametrized) && Regex.match?(re1, name) ->
           [[_, var, value]] = Regex.scan(re1, name)
           %{"t_value" => {"#{var}", value}}
 
-        Keyword.get(opts, :translation) && Regex.match?(re2, name) ->
+        Keyword.get(opts, :parametrized) && Regex.match?(re2, name) ->
           [[_, var, value]] = Regex.scan(re2, name)
           %{"t_value" => {"#{var}", value}}
 
-        Keyword.get(opts, :translation) && Regex.match?(re3, name) ->
+        Keyword.get(opts, :parametrized) && Regex.match?(re3, name) ->
           [[_, var, value]] = Regex.scan(re3, name)
           %{"t_assign" => {"#{var}", value}}
 
@@ -91,11 +91,11 @@ defmodule Liquid.Appointer do
 
   defp assign_context([head | tail], assigns) do
     [name, args] = head
-    parse_opts = [translation: name == :t]
+    parse_opts = [parametrized: name == :t || name == :img_url]
 
     args =
       for arg <- args do
-        parsed = parse_name(arg, translation: parse_opts)
+        parsed = parse_name(arg, parse_opts)
 
         cond do
           Map.has_key?(parsed, :parts) ->

@@ -95,28 +95,43 @@ defmodule Liquid.Variable do
 
   defp parse_filters(filters) do
     for markup <- filters do
-      if String.starts_with?(markup, "t:") do
-        args =
-          Regex.scan(
-            ~r/([ ]*[a-z0-9_]+:[ ]*(?:"[^"]+"|'[^']+'|[a-z_\d\.]+)[,]*)/,
-            String.trim(String.slice(markup, 2, 1000))
-          )
-          |> List.flatten()
-          |> Liquid.List.even_elements()
-          |> Enum.map(&String.trim(&1, ","))
-          |> Enum.map(&String.trim(&1, " "))
+      cond do
+        String.starts_with?(markup, "t:") ->
+          args =
+            Regex.scan(
+              ~r/(\s*[a-z0-9_]+:\s*(?:"[^"]+"|'[^']+'|[a-z_\d\.]+)[,]*)/,
+              String.trim(String.slice(markup, 2, 1000))
+            )
+            |> List.flatten()
+            |> Liquid.List.even_elements()
+            |> Enum.map(&String.trim(&1, ","))
+            |> Enum.map(&String.trim(&1, " "))
 
-        [:t, args]
-      else
-        [_, filter] = ~r/\s*(\w+)/ |> Regex.scan(markup) |> hd()
+          [:t, args]
 
-        args =
-          Liquid.filter_arguments()
-          |> Regex.scan(markup)
-          |> List.flatten()
-          |> Liquid.List.even_elements()
+        String.starts_with?(markup, "img_url:") ->
+          args =
+            Regex.scan(
+              ~r/(\s*[a-z0-9_]+:\s*(?:"[^"]+"|'[^']+'|[a-z_\d\.]+)[,]*)/,
+              markup
+            )
+            |> List.flatten()
+            |> Liquid.List.even_elements()
+            |> Enum.map(&String.trim(&1, ","))
+            |> Enum.map(&String.trim(&1, " "))
 
-        [String.to_atom(filter), args]
+          [:img_url, args]
+
+        true ->
+          [_, filter] = ~r/\s*(\w+)/ |> Regex.scan(markup) |> hd()
+
+          args =
+            Liquid.filter_arguments()
+            |> Regex.scan(markup)
+            |> List.flatten()
+            |> Liquid.List.even_elements()
+
+          [String.to_atom(filter), args]
       end
     end
   end
