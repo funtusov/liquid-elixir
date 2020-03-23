@@ -50,15 +50,15 @@ defmodule Liquid.CustomFilters do
     end)
   end
 
-  def img_url("url", %{"gravity" => "bottom", "img_url" => "300x300"}) do
+  def img_url("url", %{"gravity" => "bottom", "img_url" => "300x300"}, _context) do
     "url"
   end
 
-  def img_url("url", %{"img_url" => "master"}) do
+  def img_url("url", %{"img_url" => "master"}, _context) do
     "master"
   end
 
-  def img_url("url", _) do
+  def img_url("url", _, _) do
     "no-size"
   end
 end

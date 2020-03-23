@@ -531,7 +531,7 @@ defmodule Liquid.Filters do
     args =
       cond do
         name == :img_url ->
-          parse_pair_args(args)
+          parse_pair_args(args) ++ [context]
 
         true ->
           args
@@ -572,8 +572,10 @@ defmodule Liquid.Filters do
   end
 
   defp parse_pair_arg(arg, result) do
-    [[name], [value]] = [Map.keys(arg), Map.values(arg)]
-    Map.put(result, name, value)
+    case [Map.keys(arg), Map.values(arg)] do
+      [[name], [value]] -> Map.put(result, name, value)
+      _ -> arg
+    end
   end
 
   defp replace_quotes(arg) when is_binary(arg) do
