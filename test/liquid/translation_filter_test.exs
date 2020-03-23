@@ -2,6 +2,32 @@ defmodule Liquid.TranslationFilterTest do
   use ExUnit.Case, async: false
   alias Liquid.Template
 
+  test "img_url / no size" do
+    expected = "no-size"
+    markup = "{{ 'url' | img_url, gravity: 'bottom' }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "img_url / no size / master" do
+    expected = "master"
+    markup = "{{ 'url' | img_url: \"master\", gravity: 'bottom' }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
   test "img_url" do
     expected = "url"
     markup = "{{ 'url' | img_url: '300x300', gravity: 'bottom' }}"
