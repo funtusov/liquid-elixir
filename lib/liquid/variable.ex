@@ -31,6 +31,7 @@ defmodule Liquid.Variable do
 
     filter_context = %{
       theme_id: context.assigns |> Map.get("theme_id"),
+      store_id: context.assigns |> Map.get("store_id"),
       localization_json: context.assigns |> Map.get("localization_json"),
       locale: context.assigns |> Map.get("locale")
     }
@@ -127,6 +128,26 @@ defmodule Liquid.Variable do
             |> Enum.map(&String.trim(&1, " "))
 
           [:img_url, args]
+
+        String.starts_with?(markup, "file_url:") ->
+          args =
+            Regex.scan(regexp, markup)
+            |> List.flatten()
+            |> Liquid.List.even_elements()
+            |> Enum.map(&String.trim(&1, ","))
+            |> Enum.map(&String.trim(&1, " "))
+
+          [:file_url, args]
+
+        String.starts_with?(markup, "file_url,") ->
+          args =
+            Regex.scan(regexp, String.trim(String.slice(markup, 8, 1000)))
+            |> List.flatten()
+            |> Liquid.List.even_elements()
+            |> Enum.map(&String.trim(&1, ","))
+            |> Enum.map(&String.trim(&1, " "))
+
+          [:file_url, args]
 
         true ->
           [_, filter] = ~r/\s*(\w+)/ |> Regex.scan(markup) |> hd()

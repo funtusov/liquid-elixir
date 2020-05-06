@@ -533,6 +533,9 @@ defmodule Liquid.Filters do
         name == :img_url ->
           parse_pair_args(args) ++ [context]
 
+        name == :file_url ->
+          parse_pair_args(args) ++ [context]
+
         true ->
           args
       end

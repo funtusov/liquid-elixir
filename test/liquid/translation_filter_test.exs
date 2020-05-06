@@ -15,9 +15,35 @@ defmodule Liquid.TranslationFilterTest do
     end
   end
 
+  test "file_url / no size" do
+    expected = "no-size"
+    markup = "{{ 'url' | file_url, gravity: 'bottom' }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
   test "img_url / no size / master" do
     expected = "master"
     markup = "{{ 'url' | img_url: \"master\", gravity: 'bottom' }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "file_url / no size / master" do
+    expected = "master"
+    markup = "{{ 'url' | file_url: \"master\", gravity: 'bottom' }}"
     template = Template.parse(markup)
 
     with {:ok, result, _} <- Template.render(template, %{}) do
@@ -41,9 +67,35 @@ defmodule Liquid.TranslationFilterTest do
     end
   end
 
+  test "file_url" do
+    expected = "url"
+    markup = "{{ 'url' | file_url: '300x300', gravity: 'bottom' }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
   test "img_url / variable" do
     expected = "url"
     markup = "{{ product.image_url | img_url: '300x300', gravity: 'bottom' }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{"product" => %{"image_url" => "url"}}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "file_url / variable" do
+    expected = "url"
+    markup = "{{ product.image_url | file_url: '300x300', gravity: 'bottom' }}"
     template = Template.parse(markup)
 
     with {:ok, result, _} <- Template.render(template, %{"product" => %{"image_url" => "url"}}) do

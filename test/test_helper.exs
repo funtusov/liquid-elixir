@@ -61,9 +61,22 @@ defmodule Liquid.CustomFilters do
   def img_url("url", _, _) do
     "no-size"
   end
+
+  def file_url("url", %{"gravity" => "bottom", "file_url" => "300x300"}, _context) do
+    "url"
+  end
+
+  def file_url("url", %{"file_url" => "master"}, _context) do
+    "master"
+  end
+
+  def file_url("url", _, _) do
+    "no-size"
+  end
 end
 
 Application.put_env(:liquid, :custom_filters, %{
   t: Liquid.CustomFilters,
-  img_url: Liquid.CustomFilters
+  img_url: Liquid.CustomFilters,
+  file_url: Liquid.CustomFilters
 })

@@ -91,7 +91,7 @@ defmodule Liquid.Appointer do
 
   defp assign_context([head | tail], assigns) do
     [name, args] = head
-    parse_opts = [parametrized: name == :t || name == :img_url]
+    parse_opts = [parametrized: name == :t || name == :img_url || name == :file_url]
 
     args =
       for arg <- args do
