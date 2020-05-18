@@ -86,7 +86,6 @@ defmodule Liquid.Appointer do
     if is_list(value), do: %{parts: value}, else: %{literal: value}
   end
 
-  defp assign_context(filters, assigns) when assigns == %{}, do: filters
   defp assign_context([], _), do: []
 
   defp assign_context([head | tail], assigns) do
