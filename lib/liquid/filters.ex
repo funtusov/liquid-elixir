@@ -522,6 +522,7 @@ defmodule Liquid.Filters do
     args =
       case name do
         :asset_url -> [context]
+        :locale_path -> [context[:locale_default]]
         _ -> args
       end
 
