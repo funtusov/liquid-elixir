@@ -234,6 +234,16 @@ defmodule Liquid.Tags.IfElseTagTest do
     )
   end
 
+  test :if_with_contains_condition_list do
+    assert_result("yes", "{% if bob contains 'o' %}yes{% else %}no{% endif %}", %{
+      "bob" => ["b", "o", "b"]
+    })
+
+    assert_result("no", "{% if bob contains 'o' %}yes{% else %}no{% endif %}", %{
+      "bob" => ["b", "b"]
+    })
+  end
+
   defp assert_result(expected, markup, assigns \\ %{}) do
     t = Template.parse(markup)
     {:ok, rendered, _} = Template.render(t, assigns)

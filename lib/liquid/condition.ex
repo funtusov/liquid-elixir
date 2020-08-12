@@ -111,7 +111,10 @@ defmodule Liquid.Condition do
         left != right
 
       :contains ->
-        contains(left, right)
+        cond do
+          is_list(left) && is_binary(right) -> right in left
+          true -> contains(left, right)
+        end
 
       _ ->
         raise Liquid.SyntaxError,
@@ -128,12 +131,15 @@ defmodule Liquid.Condition do
   defp contains(left, <<right::binary>>) when is_list(left),
     do: contains(left, right |> to_charlist)
 
-  defp contains(<<left::binary>>, right) when is_list(right),
-    do: contains(left |> to_charlist, right)
+  defp contains(<<left::binary>>, right) when is_list(right) do
+    contains(left |> to_charlist, right)
+  end
 
-  defp contains(left, right) when is_list(left) and not is_list(right),
-    do: contains(left, [right])
+  defp contains(left, right) when is_list(left) and not is_list(right) do
+    contains(left, [right])
+  end
 
-  defp contains(left, right) when is_list(right) and is_list(left),
-    do: :string.rstr(left, right) > 0
+  defp contains(left, right) when is_list(right) and is_list(left) do
+    :string.rstr(left, right) > 0
+  end
 end
