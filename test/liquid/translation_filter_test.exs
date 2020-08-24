@@ -106,6 +106,60 @@ defmodule Liquid.TranslationFilterTest do
     end
   end
 
+  test "translation with data key" do
+    expected = "Product Localized Name"
+    markup = "{{product.name | t: name: 'Andy', title: title, mama: 'papa' }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <-
+           Template.render(template, %{
+             "localization_json" => %{},
+             "localization_dynamic" => %{"product_name" => "Product Localized Name"},
+             "product" => %{"name" => "product_name"}
+           }) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "translation with data key / no params" do
+    expected = "Product Localized Name"
+    markup = "{{product.name | t}}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <-
+           Template.render(template, %{
+             "localization_json" => %{},
+             "localization_dynamic" => %{"product_name" => "Product Localized Name"},
+             "product" => %{"name" => "product_name"}
+           }) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "translation with data key / wrong data" do
+    expected = "name"
+    markup = "{{product.name | t}}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <-
+           Template.render(template, %{
+             "localization_json" => %{},
+             "localization_dynamic" => %{"product_name" => "Product Localized Name"},
+             "product" => "product_name"
+           }) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
   test "translation with placeholders" do
     expected = "layout.title.name"
     markup = "{{ 'layout.title.name' | t: name: 'Andy', title: title, mama: 'papa' }}"

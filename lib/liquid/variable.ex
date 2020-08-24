@@ -32,7 +32,8 @@ defmodule Liquid.Variable do
     filter_context = %{
       theme_id: context.assigns |> Map.get("theme_id"),
       store_id: context.assigns |> Map.get("store_id"),
-      localization_json: context.assigns |> Map.get("localization_json"),
+      localization_json: context.assigns |> Map.get("localization_json") || %{},
+      localization_dynamic: context.assigns |> Map.get("localization_dynamic"),
       locale: context.assigns |> Map.get("locale"),
       locale_default: context.assigns |> Map.get("locale_default")
     }

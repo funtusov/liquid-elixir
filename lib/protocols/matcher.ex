@@ -98,4 +98,5 @@ defimpl Liquid.Matcher, for: Any do
   """
   # !is_list(current)
   def match(_current, key) when is_binary(key), do: nil
+  def match(current, [key | _]) when is_binary(current), do: key
 end

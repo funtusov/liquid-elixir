@@ -7,7 +7,11 @@ defmodule Liquid.Helpers do
 end
 
 defmodule Liquid.CustomFilters do
-  def t(key, %{localization_json: localization, locale: locale}, params = %{"count" => count}) do
+  def t(
+        key,
+        %{localization_json: localization, locale: locale, localization_dynamic: dynamic},
+        params = %{"count" => count}
+      ) do
     locale = locale || "en"
 
     count =
@@ -24,21 +28,21 @@ defmodule Liquid.CustomFilters do
 
     value =
       case count do
-        0 -> localization[key <> ".zero"]
-        1 -> localization[key <> ".one"]
-        2 -> localization[key <> ".two"]
-        _ -> localization[key <> ".others"]
-      end || localization[key <> ".others"] || key
+        0 -> localization[key <> ".zero"] || dynamic[key <> ".zero"]
+        1 -> localization[key <> ".one"] || dynamic[key <> ".one"]
+        2 -> localization[key <> ".two"] || dynamic[key <> ".two"]
+        _ -> localization[key <> ".others"] || dynamic[key <> ".others"]
+      end || localization[key <> ".others"] || dynamic[key <> ".others"] || key
 
     t(value, params)
   end
 
-  def t(key, %{localization_json: localization}, params) do
-    t(localization[key] || key, params)
+  def t(key, %{localization_json: localization, localization_dynamic: dynamic}, params) do
+    t(localization[key] || dynamic[key] || key, params)
   end
 
-  def t(key, %{localization_json: localization}) do
-    t(key, localization, %{})
+  def t(key, %{localization_json: localization, localization_dynamic: dynamic}) do
+    t(key, localization || dynamic[key], %{})
   end
 
   def t(value, params) when params == %{}, do: value
