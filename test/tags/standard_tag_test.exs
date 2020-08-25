@@ -417,9 +417,19 @@ defmodule StandardTagTest do
     assert_template_result("array has 4 elements", "array has {{ array.size }} elements", assigns)
   end
 
+  test :test_size_of_map do
+    assigns = %{"map" => %{"foo" => "bar", "size" => "XXL"}}
+    assert_template_result("map has XXL element", "map has {{ map.size }} element", assigns)
+  end
+
+  test :test_size_of_map_throught_filter do
+    assigns = %{"map" => %{"foo" => "bar", "size" => "XXL"}}
+    assert_template_result("map has 2 element", "map has {{ map | size }} element", assigns)
+  end
+
   test :test_size_of_hash do
     assigns = %{"hash" => %{"a" => 1, "b" => 2, "c" => 3, "d" => 4}}
-    assert_template_result("hash has 4 elements", "hash has {{ hash.size }} elements", assigns)
+    assert_template_result("hash has  elements", "hash has {{ hash.size }} elements", assigns)
   end
 
   test :test_size_of_string do

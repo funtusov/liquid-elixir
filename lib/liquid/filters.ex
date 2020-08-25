@@ -24,6 +24,10 @@ defmodule Liquid.Filters do
       tuple_size(input)
     end
 
+    def size(input) when is_map(input) do
+      map_size(input)
+    end
+
     def size(_), do: 0
 
     @doc """
