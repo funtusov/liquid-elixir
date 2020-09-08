@@ -52,7 +52,7 @@ defmodule Liquid.Render do
 
   defp join_list(input), do: input
 
-  defp to_str(map) when is_map(map), do: inspect(map)
+  defp to_str(map) when is_map(map), do: Jason.encode!(map)
   defp to_str(list) when is_list(list), do: to_text(list)
   defp to_str(v), do: v
 end
