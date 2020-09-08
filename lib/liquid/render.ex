@@ -45,9 +45,14 @@ defmodule Liquid.Render do
     end
   end
 
-  def to_text(list), do: list |> List.flatten() |> Enum.reverse() |> Enum.join()
+  def to_text(list),
+    do: list |> List.flatten() |> Enum.reverse() |> Enum.map(&to_str/1) |> Enum.join()
 
   defp join_list(input) when is_list(input), do: input |> List.flatten() |> Enum.join()
 
   defp join_list(input), do: input
+
+  defp to_str(map) when is_map(map), do: inspect(map)
+  defp to_str(list) when is_list(list), do: to_text(list)
+  defp to_str(v), do: v
 end
