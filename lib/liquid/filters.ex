@@ -496,6 +496,8 @@ defmodule Liquid.Filters do
 
   def filter([[:raw, []] | rest], value, context), do: filter(append_raw(rest), value, context)
 
+  def filter([[:t, _] | rest], nil, context), do: filter(rest, nil, context)
+
   def filter([[:t = name, args] | rest], value, context) do
     rest =
       if String.ends_with?(value, "_html") do
