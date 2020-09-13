@@ -500,7 +500,7 @@ defmodule Liquid.Filters do
 
   def filter([[:t = name, args] | rest], value, context) do
     rest =
-      if String.ends_with?(value, "_html") do
+      if is_binary(value) && String.ends_with?(value, "_html") do
         rest ++ [[:raw, []]]
       else
         rest

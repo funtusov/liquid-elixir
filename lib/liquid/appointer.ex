@@ -115,7 +115,7 @@ defmodule Liquid.Appointer do
               cond do
                 is_integer(value) -> value
                 Regex.match?(~r/\d+/, value) -> value
-                true -> assigns |> Matcher.match(String.split(value, ".")) |> to_string()
+                true -> assigns |> Matcher.match(String.split(value, ".")) |> to_str()
               end
 
             %{"#{key}" => value}
@@ -127,4 +127,8 @@ defmodule Liquid.Appointer do
 
     [[name, args] | assign_context(tail, assigns)]
   end
+
+  defp to_str(map) when is_map(map), do: Jason.encode!(map)
+  defp to_str(list) when is_list(list), do: Jason.encode!(list)
+  defp to_str(v), do: to_string(v)
 end
