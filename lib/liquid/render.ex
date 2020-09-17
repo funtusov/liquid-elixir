@@ -29,8 +29,14 @@ defmodule Liquid.Render do
   end
 
   def render(output, %Variable{} = variable, %Context{} = context) do
-    {rendered, context} = Variable.lookup(variable, context)
-    {[join_list(rendered) | output], context}
+    try do
+      {rendered, context} = Variable.lookup(variable, context)
+      {[join_list(rendered) | output], context}
+    rescue
+      _e in FunctionClauseError ->
+        message = "Error in the element: {{#{variable.name}}}"
+        {[message | output], context}
+    end
   end
 
   def render(output, %Tag{name: name} = tag, %Context{} = context) do
@@ -48,7 +54,8 @@ defmodule Liquid.Render do
   def to_text(list),
     do: list |> List.flatten() |> Enum.reverse() |> Enum.map(&to_str/1) |> Enum.join()
 
-  defp join_list(input) when is_list(input), do: input |> List.flatten() |> Enum.join()
+  defp join_list(input) when is_list(input),
+    do: input |> List.flatten() |> Enum.map(&to_str/1) |> Enum.join()
 
   defp join_list(input), do: input
 

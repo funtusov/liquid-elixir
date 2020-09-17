@@ -113,6 +113,13 @@ defmodule Liquid.Parse do
   defp parse_node(<<name::binary>>, rest, %Template{} = template) do
     case Regex.named_captures(Liquid.parser(), name) do
       %{"tag" => "", "variable" => markup} when is_binary(markup) ->
+        #        markup =
+        #          if Regex.match?(~r/[^\"\']/, markup) do
+        #            String.replace(markup, "/", " | divided_by: ")
+        #          else
+        #            markup
+        #          end
+
         {Variable.create(markup), rest, template}
 
       %{"tag" => markup, "variable" => ""} when is_binary(markup) ->
