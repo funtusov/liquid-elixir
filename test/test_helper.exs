@@ -9,7 +9,7 @@ end
 defmodule Liquid.CustomFilters do
   def t(
         key,
-        %{localization_json: localization, locale: locale, localization_dynamic: dynamic},
+        %{localization: %{theme: localization, dynamic: dynamic}, locale: locale},
         params = %{"count" => count}
       ) do
     locale = locale || "en"
@@ -37,11 +37,11 @@ defmodule Liquid.CustomFilters do
     t(value, params)
   end
 
-  def t(key, %{localization_json: localization, localization_dynamic: dynamic}, params) do
+  def t(key, %{localization: %{theme: localization, dynamic: dynamic}}, params) do
     t(localization[key] || dynamic[key] || key, params)
   end
 
-  def t(key, %{localization_json: localization, localization_dynamic: dynamic}) do
+  def t(key, %{localization: %{theme: localization, dynamic: dynamic}}) do
     t(key, localization || dynamic[key], %{})
   end
 

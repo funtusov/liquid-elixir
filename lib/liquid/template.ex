@@ -61,6 +61,7 @@ defmodule Liquid.Template do
   def parse(value, presets \\ %{})
 
   def parse(<<markup::binary>>, presets) do
+    markup = String.replace(markup, "__private_labl_key__", "private")
     Liquid.Parse.parse(markup, %Template{presets: presets |> Context.cleanup_presets()})
   end
 

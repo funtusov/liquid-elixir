@@ -113,8 +113,12 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{},
-             "localization_dynamic" => %{"product_name" => "Product Localized Name"},
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{},
+                 "dynamic" => %{"product_name" => "Product Localized Name"}
+               }
+             },
              "product" => %{"name" => "product_name"}
            }) do
       assert result == expected
@@ -131,8 +135,12 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{},
-             "localization_dynamic" => %{"product_name" => "Product Localized Name"},
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{},
+                 "dynamic" => %{"product_name" => "Product Localized Name"}
+               }
+             },
              "product" => %{"name" => "product_name"}
            }) do
       assert result == expected
@@ -149,8 +157,12 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{},
-             "localization_dynamic" => %{"product_name" => "Product Localized Name"},
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{},
+                 "dynamic" => %{"product_name" => "Product Localized Name"}
+               }
+             },
              "product" => "product_name"
            }) do
       assert result == expected
@@ -165,7 +177,14 @@ defmodule Liquid.TranslationFilterTest do
     markup = "{{ 'layout.title.name' | t: name: 'Andy', title: title, mama: 'papa' }}"
     template = Template.parse(markup)
 
-    with {:ok, result, _} <- Template.render(template, %{"localization_json" => %{}}) do
+    with {:ok, result, _} <-
+           Template.render(template, %{
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{}
+               }
+             }
+           }) do
       assert result == expected
     else
       {:error, message, _} ->
@@ -180,8 +199,11 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{
-               "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{},
+                 "dynamic" => %{"layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"}
+               }
              },
              "title" => "wip"
            }) do
@@ -196,8 +218,12 @@ defmodule Liquid.TranslationFilterTest do
     expected = "[papa] Hello wip Andy!"
 
     assigns = %{
-      "localization_json" => %{
-        "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+      "__private_labl_key__" => %{
+        "localization" => %{
+          "theme" => %{
+            "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+          }
+        }
       },
       "title" => "wip"
     }
@@ -230,8 +256,12 @@ defmodule Liquid.TranslationFilterTest do
         1,
         Template.parse("{{ 'layout.title.name' | t: name: 'Andy', title: title, mama: 'papa' }}"),
         %{
-          "localization_json" => %{
-            "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+          "__private_labl_key__" => %{
+            "localization" => %{
+              "theme" => %{
+                "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+              }
+            }
           },
           "title" => "wip"
         },
@@ -241,8 +271,12 @@ defmodule Liquid.TranslationFilterTest do
         2,
         Template.parse("{{ 'layout' | t: name: 'Andy', title: title, mama: 'papa' }}"),
         %{
-          "localization_json" => %{
-            "layout" => "[{{mama}}] Hello {{title}} {{name}}!"
+          "__private_labl_key__" => %{
+            "localization" => %{
+              "theme" => %{
+                "layout" => "[{{mama}}] Hello {{title}} {{name}}!"
+              }
+            }
           },
           "title" => "wip"
         },
@@ -254,8 +288,13 @@ defmodule Liquid.TranslationFilterTest do
           "{{ 'layout' | t: name: 'Andy', title: layout.title.index, mama: layout.title.second }}"
         ),
         %{
-          "localization_json" => %{
-            "layout" => "[{{mama}}] Hello {{title}} {{name}}!"
+          "__private_labl_key__" => %{
+            "localization" => %{
+              "theme" => %{
+                "layout" => "[{{mama}}] Hello {{title}} {{name}}!"
+              },
+              "dynamic" => %{"product_name" => "Product Localized Name"}
+            }
           },
           "layout" => %{
             "title" => %{
@@ -272,8 +311,13 @@ defmodule Liquid.TranslationFilterTest do
           "{{ 'layout' | t: name: 'Andy', title: layout.title_index, mama: layout_title.second }}"
         ),
         %{
-          "localization_json" => %{
-            "layout" => "[{{mama}}] Hello {{title}} {{name}}!"
+          "__private_labl_key__" => %{
+            "localization" => %{
+              "theme" => %{
+                "layout" => "[{{mama}}] Hello {{title}} {{name}}!"
+              },
+              "dynamic" => %{"product_name" => "Product Localized Name"}
+            }
           },
           "layout" => %{
             "title_index" => "Title!"
@@ -304,8 +348,13 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{
-               "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{
+                   "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+                 },
+                 "dynamic" => %{"product_name" => "Product Localized Name"}
+               }
              },
              "title" => "wip"
            }) do
@@ -326,8 +375,13 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{
-               "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{
+                   "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+                 },
+                 "dynamic" => %{"product_name" => "Product Localized Name"}
+               }
              },
              "title" => "wip"
            }) do
@@ -345,8 +399,13 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{
-               "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{
+                   "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+                 },
+                 "dynamic" => %{"product_name" => "Product Localized Name"}
+               }
              },
              "title" => "wip"
            }) do
@@ -367,8 +426,13 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{
-               "layout.title.name_html" => "[{{mama}}] Hello {{title}} {{name}}!"
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{
+                   "layout.title.name_html" => "[{{mama}}] Hello {{title}} {{name}}!"
+                 },
+                 "dynamic" => %{"product_name" => "Product Localized Name"}
+               }
              },
              "title" => "wip"
            }) do
@@ -388,8 +452,12 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{
-               "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{
+                   "layout.title.name" => "[{{mama}}] Hello {{title}} {{name}}!"
+                 }
+               }
              },
              "title" => "wip"
            }) do
@@ -419,10 +487,15 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{
-               "layout.header.support_link" => "support",
-               "layout.header.welcome" =>
-                 "Welcome to my store. Please contact {{ link }} should you need any assistance."
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{
+                   "layout.header.support_link" => "support",
+                   "layout.header.welcome" =>
+                     "Welcome to my store. Please contact {{ link }} should you need any assistance."
+                 },
+                 "dynamic" => %{"product_name" => "Product Localized Name"}
+               }
              }
            }) do
       assert result == expected
@@ -451,10 +524,14 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "localization_json" => %{
-               "layout.header.support_link" => "support",
-               "layout.header.welcome_html" =>
-                 "Welcome to my store. Please contact {{ link }} should you need any assistance."
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{
+                   "layout.header.support_link" => "support",
+                   "layout.header.welcome_html" =>
+                     "Welcome to my store. Please contact {{ link }} should you need any assistance."
+                 }
+               }
              }
            }) do
       assert result == expected
@@ -491,12 +568,16 @@ defmodule Liquid.TranslationFilterTest do
 
     with {:ok, result, _} <-
            Template.render(template, %{
-             "locale" => "fr",
-             "localization_json" => %{
-               "customer.orders.order_count.zero" => "{{count}}: no orders",
-               "customer.orders.order_count.one" => "one ({{count}}) order",
-               "customer.orders.order_count.two" => "two orders [{{count}}]",
-               "customer.orders.order_count.other" => "many orders: {{count}}"
+             "__private_labl_key__" => %{
+               "localization" => %{
+                 "theme" => %{
+                   "customer.orders.order_count.zero" => "{{count}}: no orders",
+                   "customer.orders.order_count.one" => "one ({{count}}) order",
+                   "customer.orders.order_count.two" => "two orders [{{count}}]",
+                   "customer.orders.order_count.other" => "many orders: {{count}}"
+                 }
+               },
+               "locale" => "fr"
              },
              "customers" => %{
                "orders" => %{

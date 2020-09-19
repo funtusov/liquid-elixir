@@ -29,13 +29,17 @@ defmodule Liquid.Variable do
   def lookup(%Variable{} = v, %Context{} = context) do
     {ret, filters} = Appointer.assign(v, context)
 
+    private = Map.get(context.assigns, "__private_labl_key__")
+
     filter_context = %{
-      theme_id: context.assigns |> Map.get("theme_id"),
-      store_id: context.assigns |> Map.get("store_id"),
-      localization_json: context.assigns |> Map.get("localization_json") || %{},
-      localization_dynamic: context.assigns |> Map.get("localization_dynamic"),
-      locale: context.assigns |> Map.get("locale"),
-      locale_default: context.assigns |> Map.get("locale_default")
+      theme_id: private["theme_id"],
+      store_id: private["store_id"],
+      localization: %{
+        theme: get_in(private, ["localization", "theme"]) || %{},
+        dynamic: get_in(private, ["localization", "dynamic"]) || %{}
+      },
+      locale: private["locale"],
+      locale_default: private["locale_default"]
     }
 
     result =

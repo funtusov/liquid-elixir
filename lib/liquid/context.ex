@@ -16,10 +16,10 @@ defmodule Liquid.Context do
   end
 
   def locked_presets() do
-    ["theme_id", "store_id"]
+    ["__private_labl_key__"]
   end
 
   def cleanup_presets(presets) do
-    Map.drop(presets, ["theme_id", "store_id"])
+    Map.drop(presets, ["__private_labl_key__"])
   end
 end
