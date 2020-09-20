@@ -530,6 +530,7 @@ defmodule Liquid.Filters do
         :asset_url -> [context]
         :img_width -> [context[:theme_id]]
         :img_height -> [context[:theme_id]]
+        :img_ratio -> [context[:theme_id]]
         :asset_width -> [context[:theme_id]]
         :asset_height -> [context[:theme_id]]
         :file_width -> [context[:store_id]]
