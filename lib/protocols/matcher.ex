@@ -65,7 +65,10 @@ defimpl Liquid.Matcher, for: List do
     if current == [] do
       nil
     else
-      current |> Enum.fetch!(index) |> Liquid.Matcher.match(parts)
+      case Enum.fetch(current, index) do
+        {:ok, value} -> Liquid.Matcher.match(value, parts)
+        _ -> nil
+      end
     end
   end
 end
