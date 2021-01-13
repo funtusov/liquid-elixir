@@ -527,16 +527,38 @@ defmodule Liquid.Filters do
 
     args =
       case name do
-        :asset_url -> [context]
-        :img_width -> [context[:theme_id]]
-        :img_height -> [context[:theme_id]]
-        :img_ratio -> [context[:theme_id]]
-        :asset_width -> [context[:theme_id]]
-        :asset_height -> [context[:theme_id]]
-        :file_width -> [context[:store_id]]
-        :file_height -> [context[:store_id]]
-        :locale_path -> [context[:locale_default]]
-        _ -> args
+        :asset_url ->
+          [context]
+
+        :img_width ->
+          [context[:theme_id]]
+
+        :img_height ->
+          [context[:theme_id]]
+
+        :img_ratio ->
+          [context[:theme_id]]
+
+        :asset_width ->
+          [context[:theme_id]]
+
+        :asset_height ->
+          [context[:theme_id]]
+
+        :file_width ->
+          [context[:store_id]]
+
+        :file_height ->
+          [context[:store_id]]
+
+        :locale_path ->
+          [context[:locale_default]]
+
+        :currency_symbol ->
+          [context[:localization] && context.localization[:theme]]
+
+        _ ->
+          args
       end
 
     functions = Functions.__info__(:functions)
