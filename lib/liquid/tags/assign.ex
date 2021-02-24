@@ -8,9 +8,15 @@ defmodule Liquid.Assign do
   def parse(%Tag{} = tag, %Liquid.Template{} = template), do: {%{tag | blank: true}, template}
 
   def render(output, %Tag{markup: markup}, %Context{} = context) do
-    [[_, to, from]] = syntax() |> Regex.scan(markup)
+    [[_, to, from]] = Regex.scan(~r/([\w\-]+|[\w\-\.]+)\s*=\s*(.*)\s*/, markup)
+    to = String.split(to, ".")
 
-    if to in Context.locked_presets() do
+    locked =
+      Enum.reduce(Context.locked_presets(), false, fn preset, acc ->
+        acc == true || preset in to
+      end)
+
+    if locked do
       {output, context}
     else
       {from_value, context} =
@@ -18,7 +24,7 @@ defmodule Liquid.Assign do
         |> Variable.create()
         |> Variable.lookup(context)
 
-      result_assign = context.assigns |> Map.put(to, from_value)
+      result_assign = context.assigns |> put_in(Enum.map(to, &Access.key(&1, %{})), from_value)
       context = %{context | assigns: result_assign}
       {output, context}
     end

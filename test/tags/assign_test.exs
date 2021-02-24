@@ -19,6 +19,12 @@ defmodule Liquid.AssignTest do
     })
   end
 
+  test :assigned_variable_as_map do
+    assert_result("Size:  M", "Size: {% assign variant.size = 'M'%} {{variant.size}}", %{
+      "values" => ["foo", "bar", "baz"]
+    })
+  end
+
   test :assign_with_filter do
     assert_result(".bar.", "{% assign foo = values | split: ',' %}.{{ foo[1] }}.", %{
       "values" => "foo,bar,baz"

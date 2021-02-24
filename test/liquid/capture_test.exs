@@ -18,6 +18,22 @@ defmodule Liquid.CaptureTest do
     )
   end
 
+  test :test_captures_block_content_into_map_1 do
+    assert_template_result(
+      "test string",
+      "{% capture foo.bar %}test string{% endcapture %}{{foo.bar}}",
+      %{}
+    )
+  end
+
+  test :test_captures_block_content_into_map_2 do
+    assert_template_result(
+      "test string",
+      "{% capture 'foo.bar' %}test string{% endcapture %}{{foo.bar}}",
+      %{}
+    )
+  end
+
   test :test_capture_with_hyphen_in_variable_name do
     template_source = """
     {% capture this-thing %}Print this-thing{% endcapture %}
