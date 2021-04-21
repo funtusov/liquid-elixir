@@ -71,6 +71,10 @@ defimpl Liquid.Matcher, for: List do
       end
     end
   end
+
+  def match(_, _) do
+    nil
+  end
 end
 
 defimpl Liquid.Matcher, for: Any do
