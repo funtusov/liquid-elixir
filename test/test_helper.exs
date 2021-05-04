@@ -54,6 +54,18 @@ defmodule Liquid.CustomFilters do
     end)
   end
 
+  def img_url("url", %{"sharpen" => "2", "img_url" => "300x300"}, _context) do
+    "sharpen-2"
+  end
+
+  def img_url("url", %{"sharpen" => "0.5", "img_url" => "300x300"}, _context) do
+    "sharpen-0.5"
+  end
+
+  def img_url("url", %{"sharpen" => "1.5", "img_url" => "300x300"}, _context) do
+    "sharpen-1.5"
+  end
+
   def img_url("url", %{"gravity" => "bottom", "img_url" => "300x300"}, _context) do
     "url"
   end

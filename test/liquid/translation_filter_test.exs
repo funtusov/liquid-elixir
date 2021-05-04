@@ -93,6 +93,58 @@ defmodule Liquid.TranslationFilterTest do
     end
   end
 
+  test "img_url / string digit value" do
+    expected = "no-size"
+    markup = "{{ 'url' | img_url: size_300, sharpen: 002 }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{"size_300" => "300x300"}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "img_url / integer value" do
+    expected = "sharpen-2"
+    markup = "{{ 'url' | img_url: size_300, sharpen: 2 }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{"size_300" => "300x300"}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "img_url / float value" do
+    expected = "sharpen-0.5"
+    markup = "{{ 'url' | img_url: size_300, sharpen: 0.5 }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{"size_300" => "300x300"}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "img_url / float value / 2" do
+    expected = "sharpen-1.5"
+    markup = "{{ 'url' | img_url: size_300, sharpen: 1.5 }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{"size_300" => "300x300"}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
   test "file_url" do
     expected = "url"
     markup = "{{ 'url' | file_url: '300x300', gravity: 'bottom' }}"
