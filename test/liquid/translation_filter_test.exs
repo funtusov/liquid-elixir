@@ -67,6 +67,32 @@ defmodule Liquid.TranslationFilterTest do
     end
   end
 
+  test "img_url / var" do
+    expected = "url"
+    markup = "{{ 'url' | img_url: size, gravity: 'bottom' }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{"size" => "300x300"}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "img_url / var with underscore" do
+    expected = "url"
+    markup = "{{ 'url' | img_url: size_300, gravity: 'bottom' }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{"size_300" => "300x300"}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
   test "file_url" do
     expected = "url"
     markup = "{{ 'url' | file_url: '300x300', gravity: 'bottom' }}"

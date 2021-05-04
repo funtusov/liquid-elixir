@@ -114,7 +114,7 @@ defmodule Liquid.Appointer do
             value =
               cond do
                 is_integer(value) -> value
-                Regex.match?(~r/\d+/, value) -> value
+                Regex.match?(~r/^[0-9]+\d*$/, value) -> value
                 true -> assigns |> Matcher.match(String.split(value, ".")) |> to_str()
               end
 
