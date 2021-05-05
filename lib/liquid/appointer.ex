@@ -25,24 +25,24 @@ defmodule Liquid.Appointer do
         %Variable{literal: nil, parts: parts, filters: filters},
         %{assigns: assigns} = context
       ) do
-    {match(context, parts), filters |> assign_context(assigns)}
+    {match(context, parts, context.assigns), filters |> assign_context(assigns)}
   end
 
   @doc "Verifies matches between Variable and filters, data types and parts"
-  def match(%{assigns: assigns} = context, [key | _] = parts) when is_binary(key) do
+  def match(%{assigns: assigns} = context, [key | _] = parts, _) when is_binary(key) do
     case assigns do
-      %{^key => _value} -> match(assigns, parts)
-      _ -> Matcher.match(context, parts)
+      %{^key => _value} -> match(assigns, parts, assigns)
+      _ -> Matcher.match(context, parts, assigns)
     end
   end
 
-  def match(current, []), do: current
+  def match(current, [], _), do: current
 
-  def match(current, [name | parts]) when is_binary(name) do
-    current |> match(name) |> Matcher.match(parts)
+  def match(current, [name | parts], assigns) when is_binary(name) do
+    current |> match(name, assigns) |> Matcher.match(parts, assigns)
   end
 
-  def match(current, key) when is_binary(key), do: Map.get(current, key)
+  def match(current, key, _) when is_binary(key), do: Map.get(current, key)
 
   @doc """
   Makes `Variable.parts` or literals from the given markup
@@ -98,7 +98,7 @@ defmodule Liquid.Appointer do
 
         cond do
           Map.has_key?(parsed, :parts) ->
-            assigns |> Matcher.match(parsed.parts) |> to_string()
+            assigns |> Matcher.match(parsed.parts, assigns) |> to_string()
 
           Map.has_key?(assigns, :__struct__) ->
             key = String.to_atom(arg)
@@ -113,10 +113,20 @@ defmodule Liquid.Appointer do
 
             value =
               cond do
-                is_integer(value) -> value
-                is_float(value) -> value
-                Regex.match?(~r/^([1-9]+\d*|0|[0-9]+\.[0-9]+)$/, value) -> value
-                true -> assigns |> Matcher.match(String.split(value, ".")) |> to_str()
+                is_integer(value) ->
+                  value
+
+                is_float(value) ->
+                  value
+
+                Regex.match?(~r/^([1-9]+\d*|0|[0-9]+\.[0-9]+)$/, value) ->
+                  value
+
+                true ->
+                  case parse_name(value) do
+                    %{parts: parts} -> assigns |> Matcher.match(parts, assigns) |> to_str()
+                    %{literal: value} -> value |> to_str()
+                  end
               end
 
             %{"#{key}" => value}

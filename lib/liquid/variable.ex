@@ -101,7 +101,7 @@ defmodule Liquid.Variable do
   end
 
   defp parse_filters(filters) do
-    regexp = ~r/(\s*[a-z0-9_]+:\s*(?:"[^"]+"|'[^']+'|[a-z_\d\.]+)[,]*)/
+    regexp = ~r/(\s*[a-z0-9_]+:\s*(?:"[^"]+"|'[^']+'|[a-z_\d\.\[\]]+)[,]*)/
 
     for markup <- filters do
       cond do

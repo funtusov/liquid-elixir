@@ -74,6 +74,10 @@ defmodule Liquid.CustomFilters do
     "master"
   end
 
+  def img_url("url", %{"img_url" => "400x400"}, _context) do
+    "url"
+  end
+
   def img_url("url", _, _) do
     "no-size"
   end

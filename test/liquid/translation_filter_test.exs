@@ -2,6 +2,19 @@ defmodule Liquid.TranslationFilterTest do
   use ExUnit.Case, async: false
   alias Liquid.Template
 
+  test "get by index by variable" do
+    expected = "b"
+    markup = "{{foo[bar]}}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{"foo" => ["a", "b", "c"], "bar" => 1}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
   test "img_url / no size" do
     expected = "no-size"
     markup = "{{ 'url' | img_url, gravity: 'bottom' }}"
@@ -94,7 +107,7 @@ defmodule Liquid.TranslationFilterTest do
   end
 
   test "img_url / string digit value" do
-    expected = "no-size"
+    expected = "sharpen-2"
     markup = "{{ 'url' | img_url: size_300, sharpen: 002 }}"
     template = Template.parse(markup)
 
@@ -138,6 +151,19 @@ defmodule Liquid.TranslationFilterTest do
     template = Template.parse(markup)
 
     with {:ok, result, _} <- Template.render(template, %{"size_300" => "300x300"}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "img_url / array value" do
+    expected = "url"
+    markup = "{{ 'url' | img_url: ssss[0] }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <- Template.render(template, %{"ssss" => ["400x400"]}) do
       assert result == expected
     else
       {:error, message, _} ->
