@@ -67,15 +67,10 @@ defimpl Liquid.Matcher, for: List do
   def match(current, ["size" | _], _), do: current |> Enum.count()
 
   def match(current, [<<?[, index::binary>> | parts], assigns) do
-    index = index |> String.split("]") |> hd
-
     index =
       cond do
-        Regex.match?(~r/^\d+$/, index) ->
-          String.to_integer(index)
-
-        index == "" ->
-          0
+        Regex.match?(~r/^\d+\]*$/, index) ->
+          String.to_integer(String.trim_trailing(index, "]"))
 
         true ->
           case Liquid.Appointer.parse_name(index) do

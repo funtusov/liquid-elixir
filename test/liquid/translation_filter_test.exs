@@ -15,6 +15,20 @@ defmodule Liquid.TranslationFilterTest do
     end
   end
 
+  test "get by index by variable inside variable" do
+    expected = "c"
+    markup = "{{foo[bar[1]]}}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <-
+           Template.render(template, %{"foo" => ["a", "b", "c"], "bar" => [1, 2, 3]}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
   test "img_url / no size" do
     expected = "no-size"
     markup = "{{ 'url' | img_url, gravity: 'bottom' }}"
