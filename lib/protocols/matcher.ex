@@ -48,8 +48,21 @@ defimpl Liquid.Matcher, for: Map do
   # def match(current, ["size" | _]), do: current |> map_size
 
   def match(current, [<<?[, index::binary>> | parts], assigns) do
-    index = index |> String.split("]") |> hd |> String.replace(Liquid.quote_matcher(), "")
-    match(current, [index | parts], assigns)
+    index =
+      if Regex.match?(~r/^.*\[.*\]$/, index) do
+        index
+      else
+        index |> String.trim_trailing("]")
+      end
+
+    case match(current, [index | parts], assigns) do
+      nil ->
+        index = match_by_name(index, assigns)
+        match(current, [index | parts], assigns)
+
+      value ->
+        value
+    end
   end
 
   def match(current, [name | parts], assigns) when is_binary(name) do
@@ -57,6 +70,13 @@ defimpl Liquid.Matcher, for: Map do
   end
 
   def match(current, key, _) when is_binary(key), do: current[key]
+
+  defp match_by_name(index, assigns) do
+    case Liquid.Appointer.parse_name(index) do
+      %{parts: parts} -> assigns |> Liquid.Matcher.match(parts, assigns)
+      %{literal: literal} -> literal
+    end
+  end
 end
 
 defimpl Liquid.Matcher, for: List do
@@ -69,7 +89,7 @@ defimpl Liquid.Matcher, for: List do
   def match(current, [<<?[, index::binary>> | parts], assigns) do
     index =
       cond do
-        Regex.match?(~r/^\d+\]*$/, index) ->
+        Regex.match?(~r/^\d+\]$/, index) ->
           String.to_integer(String.trim_trailing(index, "]"))
 
         true ->

@@ -2,7 +2,7 @@ defmodule Liquid.TranslationFilterTest do
   use ExUnit.Case, async: false
   alias Liquid.Template
 
-  test "get by index by variable" do
+  test "get by index by variable from list" do
     expected = "b"
     markup = "{{foo[bar]}}"
     template = Template.parse(markup)
@@ -15,13 +15,63 @@ defmodule Liquid.TranslationFilterTest do
     end
   end
 
-  test "get by index by variable inside variable" do
+  test "get by index by variable inside variable from list" do
     expected = "c"
     markup = "{{foo[bar[1]]}}"
     template = Template.parse(markup)
 
     with {:ok, result, _} <-
            Template.render(template, %{"foo" => ["a", "b", "c"], "bar" => [1, 2, 3]}) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "get by index by variable from map" do
+    expected = "bb"
+    markup = "{{foo[bar]}}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <-
+           Template.render(template, %{
+             "foo" => %{"a" => "aa", "b" => "bb", "c" => "cc"},
+             "bar" => "b"
+           }) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "get by index from map" do
+    expected = "bb"
+    markup = "{{foo.bar}}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <-
+           Template.render(template, %{
+             "foo" => %{"bar" => "bb"}
+           }) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
+  test "get by index by variable inside variable from map" do
+    expected = "bb"
+    markup = "{{foo[bar[1]]}}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <-
+           Template.render(template, %{
+             "foo" => %{"a" => "aa", "b" => "bb", "c" => "cc"},
+             "bar" => ["a", "b", "c"]
+           }) do
       assert result == expected
     else
       {:error, message, _} ->
