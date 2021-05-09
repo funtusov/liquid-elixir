@@ -19,12 +19,33 @@ defmodule Liquid.Assign do
     if locked do
       {output, context}
     else
-      {from_value, context} =
-        from
-        |> Variable.create()
-        |> Variable.lookup(context)
+      value =
+        if String.starts_with?(from, "[") && String.ends_with?(from, "]") do
+          from_parts =
+            from
+            |> String.slice(1, String.length(from) - 2)
+            |> String.split(",")
+            |> Enum.map(&String.trim/1)
+            |> Enum.map(fn value ->
+              {value, _} =
+                value
+                |> Variable.create()
+                |> Variable.lookup(context)
 
-      result_assign = context.assigns |> put_in(Enum.map(to, &Access.key(&1, %{})), from_value)
+              value
+            end)
+
+          from_parts
+        else
+          {from_value, _} =
+            from
+            |> Variable.create()
+            |> Variable.lookup(context)
+
+          from_value
+        end
+
+      result_assign = context.assigns |> put_in(Enum.map(to, &Access.key(&1, %{})), value)
       context = %{context | assigns: result_assign}
       {output, context}
     end

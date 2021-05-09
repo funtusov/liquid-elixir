@@ -35,6 +35,31 @@ defmodule Liquid.AssignTest do
     assert_result("test", "{% assign foo = 'test' %}{{foo}}", %{})
   end
 
+  describe "assign list" do
+    test 'assign list / one string' do
+      assert_result(".bar.", "{% assign foo = ['bar'] %}.{{foo[0]}}.", %{})
+    end
+
+    test 'assign list / one value' do
+      assert_result(".foo-var.", "{% assign foo = [bar] %}.{{foo[0]}}.", %{"bar" => "foo-var"})
+    end
+
+    test 'assign list / multiple values' do
+      assert_result(
+        ".bar,foo-var,DeepMapValue,deep.map,112,-3.45,-42,3.14.",
+        "{% assign foo = ['bar', bar, deep.map, 'deep.map', 112, -3.45, -42, deep.list[ind]] %}.{{foo | join: ','}}.",
+        %{
+          "bar" => "foo-var",
+          "deep" => %{
+            "map" => "DeepMapValue",
+            "list" => ["one", 2, "three", 3.14]
+          },
+          "ind" => 3
+        }
+      )
+    end
+  end
+
   defp assert_result(expected, markup, assigns) do
     template = Liquid.Template.parse(markup)
     {:ok, result, _} = Liquid.Template.render(template, assigns)
