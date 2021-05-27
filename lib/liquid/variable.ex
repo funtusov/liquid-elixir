@@ -39,7 +39,8 @@ defmodule Liquid.Variable do
         dynamic: get_in(private, ["localization", "dynamic"]) || %{}
       },
       locale: private["locale"],
-      locale_default: private["locale_default"]
+      locale_default: private["locale_default"],
+      colors: private["colors"]
     }
 
     result =

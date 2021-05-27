@@ -93,10 +93,15 @@ defmodule Liquid.CustomFilters do
   def file_url("url", _, _) do
     "no-size"
   end
+
+  def color_to_hex(color, colors) do
+    "#" <> colors[color]
+  end
 end
 
 Application.put_env(:liquid, :custom_filters, %{
   t: Liquid.CustomFilters,
   img_url: Liquid.CustomFilters,
-  file_url: Liquid.CustomFilters
+  file_url: Liquid.CustomFilters,
+  color_to_hex: Liquid.CustomFilters
 })

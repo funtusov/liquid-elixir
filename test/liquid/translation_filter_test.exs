@@ -79,6 +79,22 @@ defmodule Liquid.TranslationFilterTest do
     end
   end
 
+  test "color_to_hex" do
+    expected = "#FFFFFF#000000"
+    markup = "{{ 'white' | color_to_hex }}{{ 'green' | color_to_hex }}"
+    template = Template.parse(markup)
+
+    with {:ok, result, _} <-
+           Template.render(template, %{
+             "__private_labl_key__" => %{"colors" => %{"white" => "FFFFFF", "green" => "000000"}}
+           }) do
+      assert result == expected
+    else
+      {:error, message, _} ->
+        assert message == expected
+    end
+  end
+
   test "img_url / no size" do
     expected = "no-size"
     markup = "{{ 'url' | img_url, gravity: 'bottom' }}"

@@ -557,6 +557,9 @@ defmodule Liquid.Filters do
         :currency_symbol ->
           [context[:localization] && context.localization[:theme]]
 
+        :color_to_hex ->
+          [context[:colors]]
+
         _ ->
           args
       end
